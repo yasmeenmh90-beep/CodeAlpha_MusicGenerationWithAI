@@ -54,3 +54,11 @@ def track(key: UUID, kind: str):
     if not path.is_file():
         raise HTTPException(404)
     return FileResponse(path, media_type="audio/wav" if kind=="wav" else "audio/midi")
+
+@app.get("/training/history")
+def training_history():
+    import json
+    def read(name):
+        path = music.ROOT / name
+        return json.loads(path.read_text()) if path.is_file() else []
+    return {"original": read("history.json"), "conditioned": read("conditioned_history.json")}
