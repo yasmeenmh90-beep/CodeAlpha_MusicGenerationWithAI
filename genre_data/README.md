@@ -1,0 +1,3 @@
+# Genre-labelled MIDI data
+
+Place independently sourced, appropriately licensed MIDI pieces in ambient/, classical/, electronic/, jazz/, cinematic/, and lofi/. Each needs at least two distinct pieces longer than four seconds; substantially more are recommended. Avoid near duplicates across train/validation and record provenance and licences. Run `python conditioning.py --data genre_data --epochs 15` from the repository root. This creates a separate checkpoint and history; the original model is not overwritten. No labelled corpus or trained genre checkpoint is supplied. Validation token accuracy does not establish genre fidelity; use held-out listening and genre-specific evaluation before making that claim.
