@@ -4,7 +4,7 @@ const KEY='sonata-library-v4';
 export function load():SavedTrack[]{try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch{return []}}
 export function save(rows:SavedTrack[]){localStorage.setItem(KEY,JSON.stringify(rows));}
 export function addTrack(track:SavedTrack){save([track,...load().filter(x=>x.id!==track.id)])}
-const BASE='http://localhost:8000';
+const BASE=import.meta.env.VITE_API_URL || 'http://localhost:8000';
 export default function Library({analytics=false}:{analytics?:boolean}){
  const [rows,setRows]=useState(load),[query,setQuery]=useState(''),[fav,setFav]=useState(false),[sort,setSort]=useState('new'),[error,setError]=useState('');
  const [history,setHistory]=useState<{epoch:number;loss:number;val_loss?:number;val_accuracy?:number}[]>([]);

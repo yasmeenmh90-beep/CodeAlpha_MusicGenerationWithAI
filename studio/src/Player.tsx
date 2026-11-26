@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {addTrack,type SavedTrack} from './Library';
-const BASE='http://localhost:8000';
+const BASE=import.meta.env.VITE_API_URL || 'http://localhost:8000';
 type Track={wav:string;midi:string;duration:number};
 export default function Player({bpm,temperature}:{bpm:number;temperature:number}){
  const [track,setTrack]=useState<Track|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[playing,setPlaying]=useState(false),[length,setLength]=useState(128),[program,setProgram]=useState(0);
