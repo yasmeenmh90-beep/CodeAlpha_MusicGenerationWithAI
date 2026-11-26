@@ -1,32 +1,40 @@
-# SonataAI V4 Studio
+# SonataAI Studio
 
-React / TypeScript / Web Audio frontend with FastAPI and PyTorch LSTM backend.
+React 19 / TypeScript / Vite frontend for the FastAPI music generation service.
 
-## Local development (no Docker)
+See the [main project README](../README.md) for all eleven workspaces, model architecture, training results, API reference, installation, testing and limitations.
+
+## Start locally
 
 From the repository root:
-```sh
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-api.txt
 python -m uvicorn api:app --port 8000
 ```
-In a second terminal:
-```sh
+
+In another terminal from the root:
+
+```bash
 cd studio
 npm install
 npm run dev -- --port 5173
 ```
-Open http://localhost:5173.
 
-## Verification
-Backend: install pytest and httpx, then run python -m pytest tests/test_studio_api.py -q from root.
-Frontend: cd studio && npm run build.
-CI runs both checks on pushes and pull requests. Browser audio tests remain manual.
+Open http://localhost:5173. Use VITE_API_URL for a custom API origin.
 
-## Deployment
-Build the frontend with npm run build; output is studio/dist.
-Set VITE_API_URL before building. Serve the frontend and API behind HTTPS, configure API CORS for the deployed origin, and provide persistent writable storage for studio_outputs. The current API is intended for trusted local use: public hosting requires authentication, quotas, output cleanup and resource limits. No public deployment is provisioned.
+## Build and verify
 
-## Limitations
-Original model is monophonic; genre conditioning requires separately licensed labelled data and training. MIDI program selection does not change the original WAV synth. Library metadata is browser-local. Drum mixer does not mix generated tracks. Training page is a placeholder. V3 Streamlit entry point remains available.
+```bash
+npm run build
+```
+
+This performs TypeScript checks and produces dist/. The repository CI also defines backend pytest checks. Latest execution and browser audio verification are not confirmed.
+
+## UI implementation
+
+StudioHome: overview; Player: AI Composer; Arrangement: clip sessions; Piano: performance and MIDI; Beat: drum sequencer and mixer; Instruments: oscillator voices; Library: local catalog; GlobalDeck: audio visualization and playback effects; Training: recorded history; Analytics: saved composition statistics.
+
+The original Streamlit interface is preserved. Training runs offline. Browser storage and audio engines are local; audio routing is not unified. See the main README for detailed limitations and deployment requirements.
