@@ -11,3 +11,6 @@ streamlit run app.py
 The included model was trained for eight epochs on 12 original, procedurally generated MIDI melodies (11 train, 1 validation). No external music corpus is included. For a meaningful genre model, obtain licensed MIDI files (e.g. public-domain compositions with appropriately licensed MIDI performances), put them in a folder, and train separately using `python music.py train --data /path/to/midi --epochs 30`. Generate with `python music.py generate`. Training replaces the local checkpoint and history.
 
 Preprocessing samples the highest active pitch or rest at 8 Hz. The LSTM predicts the next token using cross entropy, with a file-level validation split. Generation uses temperature sampling and exports MIDI and synthesized WAV. WAV uses a simple harmonic oscillator independent of the MIDI program selection. This version is monophonic, not a chord generator. Streamlit GUI has not been runtime-tested in the build environment. Use locally, not as an unattended multiuser service.
+
+## V2 interface
+Run `python -m streamlit run app.py`. Includes creative presets (settings only), real waveform, piano roll, session library and analytics.

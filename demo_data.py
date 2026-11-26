@@ -1,11 +1,9 @@
-import pathlib
+from pathlib import Path
 import pretty_midi as pm
-p=pathlib.Path(__file__).resolve().parent/'data';p.mkdir(exist_ok=True)
+import random
+p=Path(__file__).parent/'data'; p.mkdir(exist_ok=True)
 for k in range(12):
- m=pm.PrettyMIDI();i=pm.Instrument(0)
- notes=[60,62,64,67,69,67,64,62,60,64,67,72]
- for j in range(48):
-  pitch=notes[(j+k)%len(notes)]+(k%3-1)*2
-  i.notes.append(pm.Note(90,pitch,j*.25,(j+1)*.25-.025))
- m.instruments.append(i);m.write(str(p/f'original_demo_{k}.mid'))
-print('Created 12 original MIDI melodies.')
+ r=random.Random(k); m=pm.PrettyMIDI(); i=pm.Instrument(0); scale=[60,62,64,65,67,69,71,72]; t=0
+ for j in range(64):
+  n=scale[(j//4+j%4+r.choice([0,0,1]))%8]+(k%3)*2; d=r.choice([.25,.25,.5]); i.notes.append(pm.Note(80,n,t,t+d)); t+=d
+ m.instruments.append(i); m.write(str(p/f'original_demo_{k}.mid'))
