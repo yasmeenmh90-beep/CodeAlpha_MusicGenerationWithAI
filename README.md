@@ -16,7 +16,7 @@
 
 **CodeAlpha Artificial Intelligence Internship · Task 3 — Music Generation with AI**
 
-[Features](#studio-workspaces) · [Architecture](#system-architecture) · [Setup](#quick-start) · [Model results](#training-results) · [API](#api-reference) · [Testing](#testing)
+[Showcase](#application-showcase) · [Features](#studio-workspaces) · [Architecture](#system-architecture) · [Setup](#quick-start) · [Model results](#training-results) · [API](#api-reference) · [Testing](#testing)
 
 </div>
 
@@ -28,10 +28,10 @@ SonataAI combines a CPU-friendly stacked LSTM melody generator with a React musi
 
 | Workspace | Implemented capabilities |
 | --- | --- |
-| 🏠 Studio | Animated vinyl artwork, illustrated navigation cards, saved-track statistics, session BPM, recent compositions |
+| 🏠 Studio | Workspace shortcuts, saved-track statistics, session BPM, recent compositions |
 | ✨ AI Composer | Tempo and creativity, four mood parameter presets, MIDI instrument selection, sequence length, key, scale, random seed, optional trained genre conditioning, playback, live spectrum, WAV/MIDI downloads, recent generations |
 | 🎛 Arrangement | Four audio lanes, library clip selection, drag-and-drop, moving playhead, timeline span, start/duration editing, duplication, deletion, simultaneous clip playback, local session save/open |
-| 🎹 Piano Studio | 36-key polyphonic synthesized keyboard, pointer/computer-key input, octave and velocity controls, four oscillator waveforms, live waveform, recording timer, piano roll, note editing and MIDI export |
+| 🎹 Piano Studio | Polyphonic synthesized keyboard with up to 36 keys, pointer/computer-key input, octave and velocity controls, four oscillator waveforms, live waveform, recording timer, piano roll, note editing and MIDI export |
 | 🥁 Beat Maker | Eight synthesized drum sounds, 16-step sequencer, Classic/House/Hip hop/Breakbeat presets, randomize, clear, animated pads, real output waveform, gain and mute |
 | 🎚 Mixer | Eight drum channels, audition, stereo pan, gain faders, mute/solo, peak dBFS meters, master gain, echo and reset |
 | 🎼 Instruments | Velvet Keys, Glass Bell, Retro Lead, Pulse Synth, 12-key keyboard, octave, volume, low-pass filter, note glow and live oscilloscope |
@@ -43,12 +43,80 @@ SonataAI combines a CPU-friendly stacked LSTM melody generator with a React musi
 ### UI and interaction
 
 - Dark music-inspired interface with purple, cyan, pink, amber and blue accents.
-- Six shell theme presets: Aurora, Gold, Cyber, Ocean, Crimson and Arctic.
+- Graphite default and six accent presets (Aurora, Gold, Cyber, Ocean, Crimson and Arctic).
 - Collapsible navigation, independent workspace scrolling and Command/Ctrl + K navigation.
-- Motion toggle, animated artwork, audio-reactive canvases and responsive layouts.
-- No repeated full production panels on the Studio landing page or persistent floating player.
+- Global Motion toggle for decorative animation and transitions. Appearance preferences persist in browser storage and CSS respects system reduced motion.
+- Responsive layouts with local horizontal scrolling for dense editors and the mixer.
 
 Decorative animation is distinct from measured audio signals. The visualizer and oscilloscope use Web Audio analyser data; training charts use recorded epoch history.
+
+## Application showcase
+
+### Studio overview
+
+Session tempo, library totals, recent compositions and workspace shortcuts.
+
+![Studio overview in SonataAI Studio](studio/screenshots/studio.png)
+
+### AI Composer
+
+Generation parameters and a spectrum display for rendered audio.
+
+![AI Composer in SonataAI Studio](studio/screenshots/ai-composer.png)
+
+### Arrangement
+
+Four audio lanes for placing and trimming saved clips.
+
+![Arrangement in SonataAI Studio](studio/screenshots/arrangement.png)
+
+### Piano Studio
+
+Polyphonic keyboard, waveform, recording transport and MIDI editor.
+
+![Piano Studio in SonataAI Studio](studio/screenshots/piano-studio.png)
+
+### Beat Maker
+
+Eight drum sounds with a 16-step sequencer and quick mix.
+
+![Beat Maker in SonataAI Studio](studio/screenshots/beat-maker.png)
+
+### Mixer
+
+Channel gain, stereo pan and peak meters for synthesized drums.
+
+![Mixer in SonataAI Studio](studio/screenshots/mixer.png)
+
+### Instruments
+
+Four oscillator voices with a performance keyboard and filter.
+
+![Instruments in SonataAI Studio](studio/screenshots/instruments.png)
+
+### Music Library
+
+Saved compositions with browsing and playback controls.
+
+![Music Library in SonataAI Studio](studio/screenshots/music-library.png)
+
+### Visualizer
+
+Audio-reactive display and playback effects.
+
+![Visualizer in SonataAI Studio](studio/screenshots/visualizer.png)
+
+### Training
+
+Checkpoint availability, learning curves and recorded epoch metrics.
+
+![Training in SonataAI Studio](studio/screenshots/training.png)
+
+### Analytics
+
+Library statistics alongside baseline model history.
+
+![Analytics in SonataAI Studio](studio/screenshots/analytics.png)
 
 ## System architecture
 
@@ -81,7 +149,7 @@ flowchart TD
 | Browser audio | Web Audio API, oscillators, filters, analysers, stereo panning |
 | Storage | Local filesystem for outputs; browser localStorage for metadata and arrangement sessions |
 | Original interface | Streamlit |
-| Testing | pytest, FastAPI TestClient, TypeScript build, GitHub Actions |
+| Testing | pytest, FastAPI TestClient, TypeScript build, Playwright, GitHub Actions |
 
 ## Machine learning pipeline
 
@@ -136,7 +204,7 @@ In a second terminal, from the repository root:
 
 ```bash
 cd studio
-npm install
+npm ci
 npm run dev -- --port 5173
 ```
 
@@ -217,7 +285,10 @@ CodeAlpha_MusicGenerationWithAI/
 ├── requirements-api.txt
 ├── studio/
 │   ├── package.json
+│   ├── package-lock.json      # Reproducible npm dependencies
 │   ├── README.md
+│   ├── screenshots/          # Application showcase captures
+│   ├── tests/browser-regression.mjs
 │   └── src/
 │       ├── main.tsx           # Application shell
 │       ├── StudioHome.tsx
@@ -230,7 +301,8 @@ CodeAlpha_MusicGenerationWithAI/
 │       ├── GlobalDeck.tsx     # Visualizer and player FX
 │       ├── Training.tsx
 │       ├── Analytics.tsx
-│       └── *.css
+│       ├── workstation.css    # Shared shell and controls
+│       └── workspaces.css      # Workspace layouts
 ├── tests/test_studio_api.py
 └── .github/workflows/studio-ci.yml
 ```
@@ -239,20 +311,28 @@ Generated studio_outputs/ files reside on the backend filesystem. Arrangement se
 
 ## Testing
 
+| Check | Local result |
+| --- | --- |
+| Production build | Passed TypeScript checks and Vite build |
+| Backend API | 6 passed, with one Starlette TestClient deprecation warning |
+| Browser regression | Passed in headless Chrome against the production preview and local FastAPI |
+| Responsive layout | All 11 workspaces passed shell and page width checks at 1440, 1024, 768, 390 and 320 px |
+
+Browser coverage includes the workspace switcher, six theme presets, motion and preference persistence, composition generation and playback, arrangement playback, piano recording and MIDI export, drum transport and mixer, instrument audition, library favorites and playback, Visualizer playback, Training and Analytics. Piano checks cover distinct octave lanes and exported pitches at both MIDI boundaries.
+
+
 ```bash
 source .venv/bin/activate
 python -m pip install pytest httpx
 python -m pytest tests/test_studio_api.py -v
 cd studio
-npm install
+npm ci
 npm run build
 ```
 
 Six backend test functions cover health, invalid settings, missing tracks, scale constraints, generation with WAV/MIDI signatures and training history. CI defines frontend type checking/build and backend test jobs on pushes and pull requests. See [GitHub Actions](https://github.com/yasmeenmh90-beep/CodeAlpha_MusicGenerationWithAI/actions).
 
-**Verification status:** source-level review completed for principal application modules; latest build, test execution and browser behavior have not been independently verified. The CI badge reflects GitHub's reported workflow state, not a claimed successful local run.
-
-Manual smoke checks: generate and download a composition; play it from the library; arrange and save clips; record and export piano notes; audition drums and change channel gains; switch visualizer modes and palettes; refresh training and analytics; check small-screen layout.
+Reproduce the browser checks with `npm run test:browser` from `studio/` after starting both services. The [Studio README](studio/README.md#build-and-verify) lists the browser setup and environment variables.
 
 ## Deployment and security
 
@@ -267,8 +347,7 @@ Build with npm run build from studio/ (output studio/dist). Set VITE_API_URL bef
 - Arrangement supports clip references and duration trimming, not full multitrack rendering/export or complete project-state persistence.
 - Training is offline; UI displays recorded history, not live training progress.
 - Browser-local storage is not cloud synchronization; removing metadata does not delete backend output files.
-- The piano octave-7 setting can produce pitches beyond MIDI 127 on the 36-key range; constrain the range before relying on high-octave MIDI export.
-- Frontend/browser regression testing, larger licensed datasets, polyphonic modeling, sampled instruments and integrated production routing remain future work.
+- Larger licensed datasets, polyphonic modeling, sampled instruments and integrated production routing remain future work.
 
 ## Credits
 

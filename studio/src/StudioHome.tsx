@@ -1,4 +1,56 @@
-import {load} from './Library';import './studio-home.css';
-const tiles=[['AI Composer','Generate a melody','violet','wave'],['Arrangement','Build your session','cyan','clips'],['Piano Studio','Play & record','pink','keys'],['Beat Maker','Find your rhythm','amber','pads'],['Mixer','Shape your mix','blue','faders'],['Instruments','Explore sound','violet','orbit'],['Music Library','Your collection','cyan','disc'],['Visualizer','See your sound','pink','wave'],['Training','Model history','amber','nodes'],['Analytics','Explore insights','blue','bars']];
-function Artwork({kind}:{kind:string}){return <svg viewBox="0 0 180 84" aria-hidden="true">{kind==='keys'?<>{Array.from({length:10},(_,i)=><rect key={i} x={i*17+5} y="9" width="15" height="65" rx="3" fill="currentColor" opacity=".65"/>)}{[1,2,4,5,6,8,9].map(i=><rect key={i} x={i*17} y="9" width="10" height="38" rx="2" fill="#151321"/>)}</>:kind==='pads'?Array.from({length:8},(_,i)=><rect key={i} x={22+i%4*36} y={8+Math.floor(i/4)*36} width="29" height="29" rx="6" fill="currentColor" opacity={.2+i*.09}/>):kind==='clips'?Array.from({length:6},(_,i)=><rect key={i} x={8+(i%2)*78+(i%3)*5} y={8+Math.floor(i/2)*23} width={i%2?62:72} height="17" rx="4" fill="currentColor" opacity={.35+i*.08}/>):kind==='faders'?Array.from({length:6},(_,i)=><g key={i}><line x1={25+i*26} x2={25+i*26} y1="8" y2="76" stroke="currentColor" opacity=".4" strokeWidth="3"/><rect x={17+i*26} y={15+(i*13)%40} width="16" height="12" rx="3" fill="currentColor"/></g>):kind==='disc'||kind==='orbit'?<g transform="translate(90 42)">{[14,23,32,39].map(r=><circle key={r} r={r} fill="none" stroke="currentColor" opacity={.35} strokeWidth="2"/>)}<circle r="8" fill="currentColor"/></g>:kind==='wave'?Array.from({length:38},(_,i)=>{const h=5+68*Math.abs(Math.sin(i*.61)*Math.cos(i*.17));return <rect key={i} x={i*4.6+3} y={(84-h)/2} width="2.5" height={h} rx="1" fill="currentColor" opacity=".8"/>}):kind==='nodes'?<g>{[0,1,2].map(i=>[0,1,2,3].map(j=><circle key={i*4+j} cx={35+i*55} cy={12+j*20} r="5" fill="currentColor"/>))}{[0,1].map(i=>[0,1,2,3].map(j=><path key={i*4+j} d={'M'+(35+i*55)+' '+(12+j*20)+' L'+(90+i*55)+' '+(12+((j+1)%4)*20)} stroke="currentColor" opacity=".4"/>))}</g>:Array.from({length:9},(_,i)=><rect key={i} x={i*19+5} y={73-(15+i*6)} width="13" height={15+i*6} rx="3" fill="currentColor" opacity={.4+i*.06}/>)}</svg>}
-export default function StudioHome({go,bpm}:{go:(n:string)=>void;bpm:number}){const tracks=load();const seconds=tracks.reduce((sum,t)=>sum+t.duration,0);return <section className="studio-home"><header className="home-hero"><div className="home-copy"><small>SONATA AI / CREATIVE SESSION</small><h1>Make sound.<br/><em>Make it yours.</em></h1><p>Your space to compose, perform and produce.</p><button className="home-primary" onClick={()=>go('AI Composer')}>✧ Start composing <span>→</span></button></div><div className="home-art" aria-hidden="true"><div className="home-ring r1"/><div className="home-ring r2"/><div className="home-record"><i>♫</i></div><div className="home-spectrum">{Array.from({length:48},(_,i)=><i key={i} style={{height:10+80*Math.abs(Math.sin(i*.48)*Math.cos(i*.13))+'%',animationDelay:-i*.08+'s'}}/>)}</div></div></header><div className="home-stats">{[[tracks.length,'Saved tracks'],[Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'),'Total audio'],[tracks.filter(t=>t.favorite).length,'Favorites'],[bpm,'Session BPM']].map(([v,n])=><div key={n}><strong>{v}</strong><small>{n}</small></div>)}</div><div className="home-heading"><h2>Creative tools</h2><small>COMPOSE · PERFORM · PRODUCE</small></div><div className="home-tools">{tiles.map(([n,d,color,kind])=><button key={n} className={'home-tile '+color} onClick={()=>go(n)}><div className="home-tile-art"><Artwork kind={kind}/></div><div className="home-tile-copy"><strong>{n}</strong><small>{d}</small></div><span className="home-arrow">↗</span></button>)}</div><div className="home-heading"><h2>Recent compositions</h2><button onClick={()=>go('Music Library')}>Open library →</button></div><div className="home-recent">{tracks.length?tracks.slice(0,3).map(t=><button key={t.id} onClick={()=>go('Music Library')}><span className="home-mini-disc">♫</span><div><strong>{t.name}</strong><small>{t.genre} · {t.bpm} BPM</small></div><span>{t.duration.toFixed(1)}s</span></button>):<div className="home-empty"><span>♫</span><div><strong>Your collection starts here</strong><small>Create your first composition to see it here.</small></div><button onClick={()=>go('AI Composer')}>Create →</button></div>}</div></section>}
+import {load} from './Library';
+
+const tools = [
+  ['AI Composer', 'Generate MIDI and WAV', 'violet', '∿'],
+  ['Arrangement', 'Sequence library audio', 'cyan', '▤'],
+  ['Piano Studio', 'Play and record MIDI', 'pink', '▥'],
+  ['Beat Maker', 'Program drum patterns', 'amber', '▦'],
+  ['Mixer', 'Balance drum channels', 'blue', '☷'],
+  ['Instruments', 'Audition synth voices', 'violet', '△'],
+  ['Music Library', 'Manage saved audio', 'cyan', '♫'],
+  ['Visualizer', 'Inspect audio and shape effects', 'pink', '◉'],
+  ['Training', 'Inspect model checkpoints', 'amber', '◈'],
+  ['Analytics', 'Review composition statistics', 'blue', '⌁'],
+];
+
+export default function StudioHome({go, bpm}: {go: (name: string) => void; bpm: number}) {
+  const tracks = load();
+  const seconds = tracks.reduce((sum, track) => sum + track.duration, 0);
+  const duration = Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
+
+  return (
+    <section className="studio-home">
+      <header className="session-heading">
+        <div><h1>Session overview</h1><p>SonataAI Studio</p></div>
+        <button className="primary" onClick={() => go('AI Composer')}>+ New composition</button>
+      </header>
+      <div className="session-metrics">
+        {[[bpm, 'Session BPM'], [tracks.length, 'Saved tracks'], [duration, 'Total audio'], [tracks.filter(track => track.favorite).length, 'Favorites']].map(([value, label]) => (
+          <div key={label}><small>{label}</small><strong>{value}</strong></div>
+        ))}
+      </div>
+      <div className="session-grid">
+        <section className="panel">
+          <h2>Workspaces</h2>
+          <div className="session-tools">
+            {tools.map(([name, description, color, icon]) => (
+              <button key={name} className={color} onClick={() => go(name)}>
+                <i aria-hidden="true">{icon}</i><span><strong>{name}</strong><small>{description}</small></span>
+              </button>
+            ))}
+          </div>
+        </section>
+        <section className="panel">
+          <header className="session-recent-header"><h2>Recent compositions</h2><button onClick={() => go('Music Library')}>Library →</button></header>
+          {tracks.length ? (
+            <ul className="session-tracks">
+              {tracks.slice(0, 8).map(track => (
+                <li key={track.id}><button onClick={() => go('Music Library')}><span>{track.name}<small>{track.genre} · {track.bpm} BPM</small></span><small>{track.duration.toFixed(1)}s</small></button></li>
+              ))}
+            </ul>
+          ) : <p className="empty">Generated compositions will appear here.</p>}
+        </section>
+      </div>
+    </section>
+  );
+}
